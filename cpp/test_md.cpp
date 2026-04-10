@@ -8,6 +8,7 @@
 #include <condition_variable>
 #include "ThostFtdcMdApi.h"
 #include "env_loader.h"
+#include "fix_locale.h"
 
 static std::string BROKER_ID, USER_ID, PASSWORD, MD_FRONT;
 static std::atomic<bool> g_login_ok{false};
@@ -74,6 +75,7 @@ private:
 };
 
 int main() {
+    fix_locale();
     auto env = load_env("../.env");
     BROKER_ID = env["CTP_BROKER_ID"];
     USER_ID   = env["CTP_USER_ID"];

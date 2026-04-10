@@ -1,6 +1,12 @@
 """openctp TTS 行情连接测试"""
+import fix_locale  # noqa: F401  must precede openctp_ctp
 import os
 import time
+from pathlib import Path
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
+
 from openctp_ctp import mdapi
 
 BROKER_ID = os.getenv("CTP_BROKER_ID")

@@ -1,4 +1,4 @@
-import os
+import fix_locale  # noqa: F401  must be first
 from pathlib import Path
 from dotenv import load_dotenv
 
