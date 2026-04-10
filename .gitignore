@@ -1,0 +1,15 @@
+.env
+__pycache__/
+*.pyc
+*.bak
+
+# Python
+py/.venv/
+py/td_flow/
+py/md_flow/
+
+# C++ build
+cpp/deps/
+cpp/td_flow/
+cpp/md_flow/
+build/
