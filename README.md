@@ -12,26 +12,30 @@
 
 评估表位于 `docs/期货程序化交易系统功能标准符合性评估表.xlsx`，详见“软件自评估表”Sheet。
 
-## 现有代码结构
+## 代码结构
 
 ```
 .
-├── .env                    # TTS 仿真账号配置（C++ / Python 共用）
-├── CMakeLists.txt          # 顶层构建 + ctest（支持 -DLANG=cpp|py|all）
+├── .env                    # TTS 仿真账号配置（C++ / Python 共用，.gitignore）
+├── .gitignore
+├── CMakeLists.txt          # 顶层构建 + ctest（从 .env 读取 LANG，支持 -DLANG=cpp|py|all）
 ├── cpp/
 │   ├── CMakeLists.txt      # C++ 构建配置
 │   ├── test_td.cpp         # C++ 交易连通性测试
 │   ├── test_md.cpp         # C++ 行情连通性测试
-│   ├── env_loader.h        # .env 加载
+│   ├── env_loader.h        # .env 键值对加载
+│   ├── fix_locale.h        # 自动生成 zh_CN.GB18030 locale（TTS .so 依赖）
 │   ├── setup_deps.sh       # 一键下载 CTP 头文件 + TTS .so 库
 │   └── deps/               # SDK 头文件和库（.gitignore，运行 setup_deps.sh 生成）
 │       ├── include/        # ThostFtdc*.h (CTP 6.7.11)
 │       └── lib/            # libthosttraderapi_se.so, libthostmduserapi_se.so (TTS)
 ├── py/
 │   ├── pyproject.toml      # uv 项目配置 + pytest 配置
+│   ├── conftest.py         # pytest 配置（加载 .env + fix_locale）
+│   ├── fix_locale.py       # 自动生成 zh_CN.GB18030 locale（TTS .so 依赖）
 │   ├── test_td.py          # Python 交易连通性测试
 │   ├── test_md.py          # Python 行情连通性测试
-│   └── conftest.py         # pytest 配置（加载根目录 .env）
+│   └── uv.lock             # uv 锁定文件
 └── docs/
     └── 期货程序化交易系统功能标准符合性评估表.xlsx
 ```
@@ -107,7 +111,7 @@
 ```bash
 # === Python ===
 # .env 中设置 LANG=py
-cd py && uv sync && uv pip install pytest pytest-timeout
+cd py && uv sync --extra test
 cd .. && mkdir -p build && cd build
 cmake .. && ctest --output-on-failure
 
@@ -117,8 +121,9 @@ cd cpp && bash setup_deps.sh
 cd .. && mkdir -p build && cd build
 cmake .. && make && ctest --output-on-failure
 
-# === 也可以单独用 pytest ===
-cd py && pytest -v
+# === 也可以直接运行单个测试 ===
+cd py && uv run python test_td.py
+cd py && uv run pytest -v
 ```
 
 ## 评分标准
